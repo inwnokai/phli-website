@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const p = t(lang).privacy;
+---
+<Base lang={lang} page="privacy">
+  <PageHero title={p.title} />
+  <section class="section">
+    <div class="wrap prose">
+      <p class="mono muted">{p.updated}</p>
+      {p.body.map((b) => <p>{b}</p>)}
+    </div>
+  </section>
+</Base>
+<style>.prose { max-width: 760px; }</style>

@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { t, href, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const s = c.security;
+---
+<Base lang={lang} page="security">
+  <PageHero eyebrow={s.eyebrow} title={s.title} lead={s.lead} />
+
+  <section class="section">
+    <div class="wrap grid grid--2 cmp">
+      <div class="card can">
+        <h2>{s.canTitle}</h2>
+        <ul class="list-check">{s.can.map((x) => <li>{x}</li>)}</ul>
+      </div>
+      <div class="card cannot">
+        <h2>{s.cannotTitle}</h2>
+        <ul class="list-check list-x">{s.cannot.map((x) => <li>{x}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sunk">
+    <div class="wrap grid grid--2 txt">
+      <div><h2>{s.rolesTitle}</h2><p>{s.rolesBody}</p></div>
+      <div><h2>{s.approvalsTitle}</h2><p>{s.approvalsBody}</p></div>
+      <div><h2>{s.dataTitle}</h2><p>{s.dataBody}</p></div>
+      <div><h2>{s.siteTitle}</h2><p>{s.siteBody} <a href={href(lang, 'privacy')}>{c.footer.privacy}</a></p></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .cmp h2 { font-size: 1.3rem; margin-bottom: 20px; }
+  .cmp .card { padding: 28px; }
+  .cannot { border-top: 3px solid var(--brand); }
+  .can { border-top: 3px solid var(--ok); }
+  .cmp .card :global(li) { color: var(--ink); }
+  .txt { gap: 40px 56px; }
+  .txt h2 { font-size: 1.3rem; margin-bottom: 10px; }
+  .txt p { color: var(--muted); margin: 0; }
+  .txt a { color: var(--brand-text); }
+</style>

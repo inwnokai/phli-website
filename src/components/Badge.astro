@@ -1,0 +1,8 @@
+---
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang; status: string }
+const { lang, status } = Astro.props;
+const c = t(lang);
+const key = (['built', 'pilot', 'dev'].includes(status) ? status : 'dev') as 'built' | 'pilot' | 'dev';
+---
+<span class={`badge badge--${key}`}>{c.status[key]}</span>

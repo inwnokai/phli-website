@@ -1,0 +1,19 @@
+---
+import { t, type Lang } from '../i18n';
+import { lineUrl, mailUrl } from '../config/site';
+interface Props { lang: Lang; subject?: string }
+const { lang, subject } = Astro.props;
+const c = t(lang);
+const mail = mailUrl && subject ? `${mailUrl}?subject=${encodeURIComponent(subject)}` : mailUrl;
+---
+{lineUrl || mail ? (
+  <div class="btn-row">
+    {lineUrl && <a class="btn btn--primary" href={lineUrl} rel="noopener" target="_blank">{c.contact.line}</a>}
+    {mail && <a class="btn btn--ghost" href={mail}>{c.contact.email}</a>}
+  </div>
+) : (
+  <p class="pending" role="note">{c.contact.pending}</p>
+)}
+<style>
+  .pending { font-family: var(--font-mono); font-size: .9rem; border: 1px dashed currentColor; padding: 12px 16px; border-radius: 4px; display: inline-block; opacity: .8; }
+</style>

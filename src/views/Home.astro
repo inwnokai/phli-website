@@ -1,0 +1,207 @@
+---
+import Base from '../layouts/Base.astro';
+import Badge from '../components/Badge.astro';
+import ContactButtons from '../components/ContactButtons.astro';
+import { t, href, type Lang } from '../i18n';
+import { site } from '../config/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const h = c.home;
+const fmt = new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US');
+---
+<Base lang={lang} page="home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">{h.eyebrow}</p>
+        <h1>{h.title}</h1>
+        <p class="lead">{h.lead}</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={href(lang, 'healthCheck', '#book')}>{h.ctaPrimary}</a>
+          <a class="btn btn--ghost" href={href(lang, 'demo')}>{h.ctaSecondary}</a>
+        </div>
+        <p class="note mono">{h.heroNote}</p>
+      </div>
+
+      <div class="panel" aria-hidden="true">
+        <div class="panel-top mono"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="sim">{c.demo.eyebrow}</span></div>
+        <div class="panel-body">
+          <p class="k mono">{c.demo.machines.cnc}</p>
+          <div class="row warn"><span class="lamp"></span>{c.demo.steps[0].text}</div>
+          <div class="row tool"><code>knowledge.search_sop</code></div>
+          <div class="row">{c.demo.steps[4].text}</div>
+          <div class="appr">
+            <p>{c.demo.approvalPrompt}</p>
+            <div class="fake-btns"><span class="b1">{c.demo.approve}</span><span class="b2">{c.demo.reject}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{h.problemTitle}</h2></div>
+      <div class="grid grid--3">
+        {h.problems.map((p, i) => (
+          <article class="card prob">
+            <span class="num mono">0{i + 1}</span>
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sunk">
+    <div class="wrap">
+      <div class="section-head"><h2>{h.approachTitle}</h2></div>
+      <ol class="steps">
+        {h.approach.map((s) => (
+          <li>
+            <span class="step mono">{s.step}</span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="modules">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>{h.modulesTitle}</h2>
+        <p class="lead">{h.modulesLead}</p>
+      </div>
+      <div class="mods">
+        {h.modules.map((m) => (
+          <article class="mod">
+            <div class="mod-head"><h3>{m.name}</h3><Badge lang={lang} status={m.status} /></div>
+            <p>{m.body}</p>
+          </article>
+        ))}
+      </div>
+      <dl class="legend">
+        <div><dt><Badge lang={lang} status="built" /></dt><dd>{c.status.builtDesc}</dd></div>
+        <div><dt><Badge lang={lang} status="pilot" /></dt><dd>{c.status.pilotDesc}</dd></div>
+        <div><dt><Badge lang={lang} status="dev" /></dt><dd>{c.status.devDesc}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section section--shell">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">AI</p>
+        <h2>{h.aiTitle}</h2>
+        <p class="lead">{h.aiLead}</p>
+      </div>
+      <div class="grid grid--4">
+        {h.aiPoints.map((p) => (
+          <article class="ai">
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="btn-row ai-cta">
+        <a class="btn btn--primary" href={href(lang, 'demo')}>{h.ctaSecondary}</a>
+        <a class="btn btn--ghost" href={href(lang, 'security')}>{c.nav.security}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap price">
+      <div>
+        <h2>{h.pricingTitle}</h2>
+      </div>
+      {site.pricePerLineThb ? (
+        <div class="price-box">
+          <p class="from mono">{h.pricingFrom}</p>
+          <p class="amount">{fmt.format(site.pricePerLineThb)} <span>{h.pricingUnit}</span></p>
+          <p class="muted">{h.pricingNote}</p>
+        </div>
+      ) : (
+        <div class="price-box"><p class="muted">{h.pricingHidden}</p></div>
+      )}
+    </div>
+  </section>
+
+  <section class="section section--sunk final">
+    <div class="wrap">
+      <h2>{h.finalTitle}</h2>
+      <p class="lead">{h.finalBody}</p>
+      <a class="btn btn--dark" href={href(lang, 'healthCheck', '#book')}>{h.ctaPrimary}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding: 56px 0 72px; }
+  @media (min-width: 900px) { .hero { padding: 96px 0 112px; } }
+  .hero-grid { display: grid; gap: 48px; align-items: center; }
+  @media (min-width: 980px) { .hero-grid { grid-template-columns: 1.15fr .85fr; } }
+  .hero h1 { margin-bottom: 22px; }
+  .hero .lead { margin-bottom: 30px; }
+  .note { margin-top: 22px; font-size: .8rem; color: var(--muted); }
+
+  .panel { background: var(--shell); color: var(--shell-text); border-radius: 10px; box-shadow: 0 30px 60px -30px rgba(21, 24, 29, .45); overflow: hidden; font-size: .9rem; }
+  .panel-top { display: flex; gap: 6px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--shell-line); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--shell-line); }
+  .sim { margin-left: auto; font-size: .72rem; color: #ffb27f; }
+  .panel-body { padding: 18px; display: grid; gap: 10px; }
+  .k { font-size: .72rem; color: var(--shell-muted); margin: 0; text-transform: uppercase; letter-spacing: .08em; }
+  .row { border-left: 2px solid var(--shell-line); padding: 2px 0 2px 12px; }
+  .row.warn { border-color: #f59e0b; display: flex; gap: 10px; align-items: baseline; }
+  .lamp { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
+  .row code { font-family: var(--font-mono); font-size: .8rem; color: #7dd3fc; }
+  .appr { margin-top: 6px; border: 1px solid var(--brand); border-radius: 6px; padding: 12px; background: rgba(242, 107, 29, .08); }
+  .appr p { margin: 0 0 10px; font-weight: 600; }
+  .fake-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .fake-btns span { padding: 6px 12px; border-radius: 4px; font-size: .82rem; font-weight: 600; }
+  .b1 { background: var(--brand); color: #15181d; }
+  .b2 { border: 1px solid var(--shell-line); }
+
+  .prob .num { color: var(--brand-text); font-size: .8rem; display: block; margin-bottom: 14px; }
+
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; counter-reset: s; }
+  @media (min-width: 860px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .steps li { padding: 28px 24px 28px 0; border-top: 2px solid var(--ink); }
+  @media (min-width: 860px) { .steps li { padding-right: 32px; } }
+  .step { color: var(--brand-text); font-size: .85rem; display: block; margin-bottom: 12px; }
+  .steps h3 { margin-bottom: 8px; }
+  .steps p { color: var(--muted); margin: 0; }
+
+  .mods { display: grid; border-top: 1px solid var(--line); }
+  @media (min-width: 760px) { .mods { grid-template-columns: repeat(2, 1fr); column-gap: 40px; } }
+  @media (min-width: 1080px) { .mods { grid-template-columns: repeat(3, 1fr); } }
+  .mod { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .mod-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+  .mod-head h3 { font-size: 1.02rem; }
+  .mod p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .legend { margin: 32px 0 0; display: grid; gap: 10px; font-size: .9rem; color: var(--muted); }
+  @media (min-width: 900px) { .legend { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+  .legend div { display: flex; gap: 10px; align-items: baseline; }
+  .legend dd { margin: 0; }
+
+  .ai { border-top: 1px solid var(--shell-line); padding-top: 20px; }
+  .ai h3 { margin-bottom: 8px; color: #fff; }
+  .ai p { color: var(--shell-muted); margin: 0; }
+  .ai-cta { margin-top: 44px; }
+
+  .price { display: grid; gap: 24px; }
+  @media (min-width: 860px) { .price { grid-template-columns: 1fr 1.4fr; align-items: start; } }
+  .price-box { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: 28px; }
+  .from { margin: 0; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .amount { font-size: 2.4rem; font-weight: 600; margin: 4px 0 8px; }
+  .amount span { font-size: 1rem; font-weight: 400; color: var(--muted); }
+  .price-box p:last-child { margin: 0; }
+
+  .final { text-align: left; }
+  .final h2 { margin-bottom: 12px; }
+  .final .lead { margin-bottom: 26px; }
+</style>

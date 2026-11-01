@@ -1,0 +1,59 @@
+---
+import Logo from './Logo.astro';
+import { t, href, other, type Lang, type PageKey } from '../i18n';
+interface Props { lang: Lang; page: PageKey }
+const { lang, page } = Astro.props;
+const c = t(lang);
+const links: { key: PageKey; label: string; hash?: string }[] = [
+  { key: 'home', label: c.nav.product, hash: '#modules' },
+  { key: 'healthCheck', label: c.nav.healthCheck },
+  { key: 'demo', label: c.nav.demo },
+  { key: 'security', label: c.nav.security },
+  { key: 'investors', label: c.nav.investors },
+];
+const alt = other(lang);
+---
+<header class="hdr">
+  <div class="wrap bar">
+    <a href={href(lang, 'home')} class="brand"><Logo /></a>
+    <nav class="desk" aria-label="Main">
+      {links.map((l) => (
+        <a href={href(lang, l.key, l.hash)} aria-current={page === l.key && !l.hash ? 'page' : undefined}>{l.label}</a>
+      ))}
+    </nav>
+    <div class="right">
+      <a class="lang" href={href(alt, page)} hreflang={alt} lang={alt}>{c.nav.switchLabel}</a>
+      <a class="btn btn--dark cta" href={href(lang, 'healthCheck', '#book')}>{c.nav.cta}</a>
+      <details class="mob">
+        <summary aria-label={c.nav.menu}><span></span><span></span><span></span></summary>
+        <nav aria-label="Mobile">
+          {links.map((l) => <a href={href(lang, l.key, l.hash)}>{l.label}</a>)}
+          <a href={href(lang, 'healthCheck', '#book')} class="btn btn--primary">{c.nav.cta}</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+<style>
+  .hdr { position: sticky; top: 0; z-index: 50; background: rgba(251, 250, 248, .92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; }
+  .brand { text-decoration: none; }
+  .desk { display: none; gap: 26px; font-size: .95rem; }
+  .desk a { text-decoration: none; color: var(--muted); }
+  .desk a:hover, .desk a[aria-current='page'] { color: var(--ink); }
+  .right { display: flex; align-items: center; gap: 14px; }
+  .lang { font-size: .9rem; color: var(--muted); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 4px; }
+  .lang:hover { color: var(--ink); border-color: var(--line-strong); }
+  .cta { display: none; min-height: 40px; padding: 8px 16px; font-size: .92rem; }
+  .mob summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; place-content: center; gap: 5px; }
+  .mob summary::-webkit-details-marker { display: none; }
+  .mob summary span { display: block; width: 20px; height: 2px; background: var(--ink); }
+  .mob nav { position: absolute; left: 0; right: 0; top: 68px; background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px var(--gutter) 20px; display: grid; gap: 4px; }
+  .mob nav a:not(.btn) { padding: 12px 0; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .mob nav .btn { margin-top: 12px; }
+  @media (min-width: 1000px) {
+    .desk { display: flex; }
+    .cta { display: inline-flex; }
+    .mob { display: none; }
+  }
+</style>

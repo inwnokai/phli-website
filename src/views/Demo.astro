@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FactoryReplay from '../components/FactoryReplay.astro';
+import { t, href, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const d = c.demo;
+---
+<Base lang={lang} page="demo">
+  <PageHero eyebrow={d.eyebrow} title={d.title} lead={d.lead} />
+  <section class="demo">
+    <div class="wrap"><FactoryReplay lang={lang} /></div>
+  </section>
+  <section class="section">
+    <div class="wrap next">
+      <div>
+        <h2>{d.nextTitle}</h2>
+        <p class="lead">{d.nextBody}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href={href(lang, 'healthCheck', '#book')}>{c.nav.cta}</a>
+        <a class="btn btn--ghost" href={href(lang, 'security')}>{c.nav.security}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .demo { padding-bottom: 72px; }
+  .next { display: grid; gap: 24px; align-items: end; }
+  @media (min-width: 900px) { .next { grid-template-columns: 1.4fr 1fr; } .next .btn-row { justify-content: flex-end; } }
+  .next h2 { margin-bottom: 10px; }
+  .next .lead { margin: 0; }
+</style>

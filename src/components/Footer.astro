@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import { t, href, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const year = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="wrap cols">
+    <div>
+      <Logo dark />
+      <p class="blurb">{c.footer.blurb}</p>
+      <p class="honesty">{c.footer.honesty}</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href={href(lang, 'healthCheck')}>{c.nav.healthCheck}</a>
+      <a href={href(lang, 'demo')}>{c.nav.demo}</a>
+      <a href={href(lang, 'security')}>{c.nav.security}</a>
+      <a href={href(lang, 'investors')}>{c.nav.investors}</a>
+      <a href={href(lang, 'privacy')}>{c.footer.privacy}</a>
+    </nav>
+  </div>
+  <div class="wrap base">© {year} {c.footer.rights}</div>
+</footer>
+<style>
+  .ftr { background: var(--shell); color: var(--shell-text); padding: 56px 0 28px; }
+  .cols { display: grid; gap: 32px; }
+  @media (min-width: 800px) { .cols { grid-template-columns: 1.4fr 1fr; } }
+  .blurb { margin: 16px 0 8px; }
+  .honesty { color: var(--shell-muted); font-size: .9rem; max-width: 34em; }
+  nav { display: grid; gap: 10px; align-content: start; }
+  nav a { color: var(--shell-muted); text-decoration: none; }
+  nav a:hover { color: var(--shell-text); }
+  .base { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--shell-line); color: var(--shell-muted); font-size: .85rem; font-family: var(--font-mono); }
+</style>

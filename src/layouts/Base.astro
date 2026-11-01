@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { t, href, langs, type Lang, type PageKey } from '../i18n';
+import { site } from '../config/site';
+
+interface Props { lang: Lang; page: PageKey | 'notFound'; noindex?: boolean }
+const { lang, page, noindex = false } = Astro.props;
+const c = t(lang);
+const meta = c.meta[page];
+const navPage: PageKey = page === 'notFound' ? 'home' : page;
+const base = site.url.replace(/\/$/, '');
+const canonical = base + href(lang, navPage);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Phli',
+  url: base + '/',
+  description: c.meta.siteTagline,
+};
+---
+<!doctype html>
+<html lang={c.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    {!noindex && langs.map((l) => <link rel="alternate" hreflang={l} href={base + href(l, navPage)} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={base + href('th', navPage)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'th' ? 'th_TH' : 'en_US'} />
+    <meta name="theme-color" content="#15181d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">{c.nav.skip}</a>
+    <Header lang={lang} page={navPage} />
+    <main id="main"><slot /></main>
+    <Footer lang={lang} />
+  </body>
+</html>

@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactButtons from '../components/ContactButtons.astro';
+import { t, href, type Lang } from '../i18n';
+import { site } from '../config/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const v = c.investors;
+---
+<Base lang={lang} page="investors">
+  <PageHero eyebrow={v.eyebrow} title={v.title} lead={v.lead} />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{v.statusTitle}</h2></div>
+      <dl class="status">
+        {v.status.map((r) => (<div><dt class="mono">{r.label}</dt><dd>{r.value}</dd></div>))}
+      </dl>
+    </div>
+  </section>
+
+  {site.marketFacts.length > 0 && (
+    <section class="section section--sunk">
+      <div class="wrap">
+        <div class="section-head"><h2>{v.marketTitle}</h2></div>
+        <div class="grid grid--3">
+          {site.marketFacts.map((f) => (
+            <div class="card">
+              <p class="big">{f.value}</p>
+              <h3>{f.label[lang]}</h3>
+              <p class="src mono">{f.source}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{v.archTitle}</h2></div>
+      <ol class="arch">
+        {v.arch.map((a, i) => (<li><span class="mono">L{i + 1}</span><h3>{a.title}</h3><p>{a.body}</p></li>))}
+      </ol>
+      <p class="more"><a href={href(lang, 'demo')}>{c.home.ctaSecondary} →</a> · <a href={href(lang, 'security')}>{c.nav.security} →</a></p>
+    </div>
+  </section>
+
+  <section class="section section--sunk">
+    <div class="wrap">
+      <h2>{v.pilotTitle}</h2>
+      <p class="lead pilot">{v.pilotPending}</p>
+    </div>
+  </section>
+
+  <section class="section section--shell">
+    <div class="wrap">
+      <h2>{v.deckTitle}</h2>
+      <p class="lead">{v.deckBody}</p>
+      <ContactButtons lang={lang} subject={lang === 'th' ? 'ขอเอกสารนำเสนอ Phli' : 'Phli investor deck'} />
+    </div>
+  </section>
+</Base>
+<style>
+  .status { margin: 0; display: grid; border-top: 1px solid var(--line); }
+  .status div { display: grid; gap: 4px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .status div { grid-template-columns: 180px 1fr; gap: 24px; } }
+  .status dt { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--brand-text); padding-top: 3px; }
+  .status dd { margin: 0; }
+  .big { font-size: 2rem; font-weight: 600; margin: 0 0 6px; }
+  .src { font-size: .75rem; margin-top: 10px; }
+  .arch { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  @media (min-width: 900px) { .arch { grid-template-columns: repeat(4, 1fr); } }
+  .arch li { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .arch span { font-size: .75rem; color: var(--brand-text); display: block; margin-bottom: 10px; }
+  .arch h3 { margin-bottom: 6px; }
+  .arch p { color: var(--muted); margin: 0; font-size: .95rem; }
+  .more { margin-top: 28px; }
+  .more a { color: var(--brand-text); }
+  .pilot { margin-top: 12px; }
+  .section--shell h2 { margin-bottom: 12px; }
+  .section--shell .lead { margin-bottom: 26px; }
+</style>

@@ -1,0 +1,277 @@
+// English copy. Every product statement here must appear in CLAIMS.md.
+export const en = {
+  lang: 'en',
+  htmlLang: 'en',
+  meta: {
+    siteTagline: 'Factory software for Thai manufacturers',
+    home: {
+      title: 'Phli | Factory software for Thai SME manufacturers',
+      description:
+        'Work orders, scheduling, quality and shop-floor tracking in one system, with an AI assistant that only acts after a person approves. Start with a free Factory Health Check.',
+    },
+    healthCheck: {
+      title: 'Free Factory Health Check | Phli',
+      description:
+        'A half-day visit to map where your production plan and actual output drift apart, with a written summary and next steps. No obligation.',
+    },
+    demo: {
+      title: 'Agent workflow demo | Phli',
+      description:
+        'Watch a recorded AI workflow on a simulated furniture factory: it spots a machine warning, checks the procedure, drafts a work order and waits for a person to approve.',
+    },
+    security: {
+      title: 'Safety, approvals and data | Phli',
+      description:
+        'What the Phli AI assistant can and cannot do, how approvals work, and how access is controlled by role.',
+    },
+    investors: {
+      title: 'Investors and partners | Phli',
+      description: 'Product status, architecture and pilot progress for investors and partners.',
+    },
+    privacy: {
+      title: 'Privacy | Phli',
+      description: 'How this website handles your data.',
+    },
+    notFound: { title: 'Page not found | Phli', description: 'This page does not exist.' },
+  },
+  nav: {
+    product: 'Product',
+    healthCheck: 'Health Check',
+    demo: 'Demo',
+    security: 'Safety & data',
+    investors: 'Investors',
+    cta: 'Book a Health Check',
+    switchLabel: 'ภาษาไทย',
+    menu: 'Menu',
+    skip: 'Skip to content',
+  },
+  status: {
+    built: 'Built',
+    pilot: 'In pilot',
+    dev: 'In development',
+    legendTitle: 'What the labels mean',
+    builtDesc: 'Working in the software today. Not yet proven at a customer site.',
+    pilotDesc: 'Being trialled in a factory now. No results published yet.',
+    devDesc: 'Planned and being built. Not available yet.',
+  },
+  home: {
+    eyebrow: 'For Thai SME manufacturers',
+    title: 'Know what happened on the floor today, not at month-end.',
+    lead:
+      'Phli brings work orders, production scheduling, quality and shop-floor updates into one system your team can use from the office or the line. An AI assistant helps your team prepare the work, and a person approves every action that matters.',
+    ctaPrimary: 'Book a free Health Check',
+    ctaSecondary: 'Watch the agent demo',
+    heroNote: 'Thai-first software. Built for furniture and discrete manufacturing.',
+    problemTitle: 'The gaps we hear about most',
+    problems: [
+      {
+        title: 'Plan and actual drift apart',
+        body: 'The plan is in one file, output is on paper, and nobody sees the gap until the order is late.',
+      },
+      {
+        title: 'Breakdowns are handled by phone',
+        body: 'Repairs get requested in chat groups, so there is no record of what failed, who fixed it or how long it took.',
+      },
+      {
+        title: 'Quality issues repeat',
+        body: 'Defects are fixed on the spot but not logged, so the same problem returns on the next batch.',
+      },
+    ],
+    approachTitle: 'How we start',
+    approach: [
+      {
+        step: '01',
+        title: 'Factory Health Check',
+        body: 'A free half-day visit. We walk one line with your team and map where time, material and information are lost.',
+      },
+      {
+        step: '02',
+        title: 'Pilot on one line',
+        body: 'We set up the modules that fit the gaps we found, on one line, with clear success criteria agreed up front.',
+      },
+      {
+        step: '03',
+        title: 'Roll out at your pace',
+        body: 'Extend to more lines only when the pilot has shown value to your team.',
+      },
+    ],
+    modulesTitle: 'What is in the system',
+    modulesLead: 'Every module carries a status label, so you know exactly what you are buying today.',
+    modules: [
+      { name: 'Maintenance work orders', body: 'Request, assign and close repairs, with a record for each machine.', status: 'built' },
+      { name: 'Inventory and stock', body: 'Track items and stock adjustments with role-based permissions.', status: 'built' },
+      { name: 'Production scheduling', body: 'Plan jobs across work centers on a Gantt view.', status: 'built' },
+      { name: 'Quality (NCR and travelers)', body: 'Record non-conformances and route travelers with the job.', status: 'built' },
+      { name: 'Labels and traveler printing', body: 'Print job labels and travelers from the system.', status: 'built' },
+      { name: 'Human approval for critical actions', body: 'Critical requests stop and wait for an authorised person.', status: 'built' },
+      { name: 'Shop-floor terminal', body: 'Operators see their job queue, log events and report incidents.', status: 'pilot' },
+            { name: 'AI assistant', body: 'Looks up machine, stock and quality data and drafts work orders for a person to approve. Switched on per deployment.', status: 'built' },
+      { name: 'Plan vs actual per shift', body: 'See the gap between planned and actual output for every shift.', status: 'dev' },
+      { name: 'Machine downtime by reason', body: 'Record why machines stop and see the biggest causes.', status: 'dev' },
+      { name: 'OEE per machine', body: 'Availability, performance and quality calculated per machine.', status: 'dev' },
+      { name: 'LINE alerts', body: 'Send important alerts to the team on LINE.', status: 'dev' },
+    ],
+    aiTitle: 'An AI assistant that asks before it acts',
+    aiLead:
+      'The assistant prepares the work. Your people decide. These rules are built into the software, not left to the model.',
+    aiPoints: [
+      { title: 'A person approves critical actions', body: 'Critical work orders and other consequential actions wait for an authorised person to approve.' },
+      { title: 'No machine control', body: 'The assistant has no tool that starts, stops, resets or changes settings on a machine.' },
+      { title: 'Access by role', body: 'Operators, supervisors, managers and admins each see and do only what their role allows.' },
+      { title: 'Runs on local models', body: 'The assistant supports local model servers such as Ollama and llama.cpp, running open models like Qwen on hardware you control.' },
+    ],
+    pricingTitle: 'Pricing',
+    pricingFrom: 'From',
+    pricingUnit: 'THB per line per month',
+    pricingNote: 'Final price depends on modules and number of lines. Discussed after the Health Check.',
+    pricingHidden: 'Pricing is set after the Health Check, based on the modules and number of lines you need.',
+    finalTitle: 'Start with one line and one afternoon.',
+    finalBody: 'The Health Check is free and carries no obligation. You keep the written summary either way.',
+  },
+  healthCheck: {
+    eyebrow: 'Free, no obligation',
+    title: 'Factory Health Check',
+    lead: 'A half-day visit to one production line. You get a clear, written picture of where plan and actual drift apart, and what to fix first.',
+    getTitle: 'What you get',
+    get: [
+      'A walk-through of one line with your supervisor',
+      'A map of where time, material and information are lost',
+      'A short written summary in Thai or English',
+      'A suggested first step, whether or not it involves Phli',
+    ],
+    fitTitle: 'A good fit if',
+    fit: [
+      'You run a discrete manufacturing plant, such as furniture, wood or metal parts',
+      'Plans live in spreadsheets and output is recorded on paper',
+      'You want to fix one line properly before changing the whole plant',
+    ],
+    stepsTitle: 'How it works',
+    steps: [
+      { title: 'Message us', body: 'Tell us your factory, product and the line you want to look at.' },
+      { title: 'Short call', body: '20 minutes to agree the date and who should join.' },
+      { title: 'Half-day visit', body: 'We observe the line and talk to the people who run it.' },
+      { title: 'Written summary', body: 'Within one week, with findings and a suggested first step.' },
+    ],
+    needTitle: 'What we need from you',
+    need: [
+      'Half a day with a supervisor who knows the line',
+      'A recent production plan, if you have one',
+      'Permission to take notes. We take no photos without your approval.',
+    ],
+    faqTitle: 'Questions',
+    faq: [
+      { q: 'Is it really free?', a: 'Yes. The visit and the written summary are free, and you are under no obligation to buy.' },
+      { q: 'Do we need to install anything?', a: 'No. The Health Check is an observation visit. Nothing is installed.' },
+      { q: 'Where do you cover?', a: 'We start with factories we can reach in a day. Message us with your location.' },
+    ],
+    ctaTitle: 'Book your Health Check',
+    ctaBody: 'Message us on LINE or by email. We aim to reply within one working day.',
+  },
+  contact: {
+    line: 'Add us on LINE',
+    email: 'Email us',
+    pending: 'Contact channels are being set up. Please check back soon.',
+  },
+  demo: {
+    eyebrow: 'Simulated data',
+    title: 'Watch an agent workflow, step by step',
+    lead:
+      'This is a recorded run on a fictional furniture factory. A machine sensor raises a warning. The assistant investigates, checks the procedure and drafts a work order. Then it stops and waits for a person.',
+    disclaimer: 'Simulated scenario. The factory, machines and readings are fictional. No real system is connected.',
+    play: 'Play',
+    pause: 'Pause',
+    restart: 'Restart',
+    stepLabel: 'Step',
+    approve: 'Approve work order',
+    reject: 'Reject',
+    approvalPrompt: 'Waiting for your decision',
+    approvedResult: 'Approved by a person. Work order created and assigned to the maintenance team. The machine keeps running; only a person decides whether to stop it.',
+    rejectedResult: 'Rejected. Nothing was created. The assistant logs the decision and keeps watching the readings.',
+    logTitle: 'Agent log',
+    floorTitle: 'Factory floor (simulated)',
+    toolLabel: 'Tool',
+    machines: { cnc: 'CNC router 01', edge: 'Edgebander 01', saw: 'Panel saw 01', pack: 'Packing' },
+    legend: { ok: 'Running', warn: 'Warning', idle: 'Idle' },
+    steps: [
+      { kind: 'event', text: 'Sensor on CNC router 01 reports spindle vibration above the warning level.', machine: 'cnc', state: 'warn' },
+      { kind: 'tool', tool: 'production.get_machine_status', text: 'Reads machine status: running, job in progress on 18 mm panels.' },
+      { kind: 'tool', tool: 'maintenance.get_open_work_orders', text: 'Checks open work orders for this machine: none.' },
+      { kind: 'tool', tool: 'knowledge.search_sop', text: 'Searches the maintenance procedure: high spindle vibration calls for a bearing and tool-holder check.' },
+      { kind: 'think', text: 'Drafts a high-priority work order: inspect spindle bearings and tool holder on CNC router 01 at the next changeover.' },
+      { kind: 'approval', text: 'Work order is ready. It will not be created until a person approves it.' },
+    ],
+    nextTitle: 'Want to see it on your own process?',
+    nextBody: 'Book a Health Check and we will walk through a scenario based on one of your lines.',
+  },
+  security: {
+    eyebrow: 'Safety, approvals and data',
+    title: 'Clear limits on what the software can do',
+    lead: 'Factories cannot afford surprises. Here is what the system can do, what it cannot, and who decides.',
+    canTitle: 'The AI assistant can',
+    can: [
+      'Read machine status, open work orders, stock levels and quality summaries',
+      'Search your maintenance procedures',
+      'Draft work orders for a person to review',
+    ],
+    cannotTitle: 'The AI assistant cannot',
+    cannot: [
+      'Start, stop, reset or change settings on any machine',
+      'Trigger or reset an emergency stop',
+      'Create a critical work order without an authorised person approving it',
+    ],
+    rolesTitle: 'Access by role',
+    rolesBody:
+      'Every request is checked against the user’s role. Shop-floor roles, supervisors and managers, and administrators each have their own permissions. Unknown roles get the least access.',
+    approvalsTitle: 'Approvals that are recorded',
+    approvalsBody:
+      'Approval requests are stored, so you can see what was requested, who approved or rejected it, and when. The assistant cannot approve its own requests.',
+    dataTitle: 'Your data',
+    dataBody:
+      'Where your production data is hosted, and which AI models are used, is agreed with you before a pilot starts. We will put it in writing.',
+    siteTitle: 'This website',
+    siteBody: 'This website has no forms, no tracking cookies and no analytics. See the privacy page.',
+  },
+  investors: {
+    eyebrow: 'Investors and partners',
+    title: 'Practical factory software for Thailand’s SME manufacturers',
+    lead:
+      'Phli combines the core systems a small factory needs with an AI assistant that works under human approval. We are early, and this page says exactly where we are.',
+    statusTitle: 'Where we are',
+    status: [
+      { label: 'Product', value: 'Core modules built: maintenance, inventory, scheduling, quality, printing, approvals.' },
+      { label: 'AI', value: 'Assistant with approval gate and local-model support. Enabled per deployment.' },
+      { label: 'Pilot', value: 'First factory pilot in progress. Results will be published only when complete and approved by the customer.' },
+      { label: 'Market', value: 'Thai SME discrete manufacturers, starting with furniture.' },
+    ],
+    marketTitle: 'Market',
+    archTitle: 'Architecture',
+    arch: [
+      { title: 'Web app and shop-floor terminal', body: 'One web application for office and line, Thai-first.' },
+      { title: 'API with role-based access', body: 'Every request is checked by role and factory.' },
+      { title: 'Approval gate', body: 'Consequential actions stop for a person. Requests and decisions are stored.' },
+      { title: 'Model-agnostic AI layer', body: 'Swappable providers, including local open models.' },
+    ],
+    pilotTitle: 'Pilot results',
+    pilotPending: 'The pilot is in progress. We will publish results here once it is complete and the customer has agreed in writing.',
+    deckTitle: 'Request the investor deck',
+    deckBody: 'Tell us who you are and what you would like to know. We share the deck and a live walkthrough on request.',
+  },
+  privacy: {
+    title: 'Privacy',
+    updated: 'Last updated: 1 November 2026',
+    body: [
+      'This website does not use forms, tracking cookies or analytics, and it does not collect personal data.',
+      'If you contact us on LINE or by email, we use your message only to reply and to arrange a Health Check. Those platforms also process your data under their own terms.',
+      'To ask us to delete your messages or contact details, write to us through the same channel.',
+    ],
+  },
+  notFound: { title: 'Page not found', body: 'The page you are looking for does not exist.', back: 'Back to home' },
+  footer: {
+    blurb: 'Factory software for Thai SME manufacturers.',
+    honesty: 'Every product claim on this site is listed in our claims register. Status labels show what is built, in pilot or in development.',
+    privacy: 'Privacy',
+    rights: 'Phli',
+  },
+};
+
+export type Copy = typeof en;

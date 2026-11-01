@@ -1,0 +1,201 @@
+---
+// Replay mode of the agent demo: a recorded run on a fictional factory.
+// No model calls, no network. The 2D floor reads machine state from the same
+// step list, so a low-poly 3D renderer can later replace the SVG without
+// touching the scenario or the copy.
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang).demo;
+
+const machines = [
+  { id: 'saw', x: 40, label: c.machines.saw },
+  { id: 'cnc', x: 200, label: c.machines.cnc },
+  { id: 'edge', x: 360, label: c.machines.edge },
+  { id: 'pack', x: 520, label: c.machines.pack },
+] as const;
+
+const payload = JSON.stringify({ steps: c.steps, approved: c.approvedResult, rejected: c.rejectedResult, toolLabel: c.toolLabel, stepLabel: c.stepLabel });
+---
+<div class="replay" data-replay={payload}>
+  <div class="top">
+    <span class="sim">{c.disclaimer}</span>
+    <div class="ctrl">
+      <button type="button" class="btn btn--ghost sm" data-act="toggle" data-play={c.play} data-pause={c.pause}>{c.play}</button>
+      <button type="button" class="btn btn--ghost sm" data-act="restart">{c.restart}</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <figure class="floor">
+      <figcaption class="cap mono">{c.floorTitle}</figcaption>
+      <svg viewBox="0 0 680 260" role="img" aria-label={c.floorTitle}>
+        <defs>
+          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20 0H0V20" fill="none" stroke="#2e343d" stroke-width="0.6" />
+          </pattern>
+        </defs>
+        <rect width="680" height="260" fill="url(#grid)" />
+        <line x1="40" y1="215" x2="640" y2="215" stroke="#3a414b" stroke-width="10" stroke-linecap="round" />
+        <g class="flow">
+          {[0, 1, 2, 3, 4, 5].map((i) => <rect class="part" x={60 + i * 100} y="210" width="16" height="10" rx="2" />)}
+        </g>
+        {machines.map((m) => (
+          <g class="m" data-machine={m.id} data-state="ok" transform={`translate(${m.x},60)`}>
+            <rect class="body-r" width="120" height="96" rx="6" />
+            <rect class="lamp" x="96" y="10" width="14" height="14" rx="7" />
+            <rect x="14" y="36" width="92" height="44" rx="3" fill="#15181d" opacity=".55" />
+            <text x="60" y="118" text-anchor="middle" class="ml">{m.label}</text>
+            <g class="wo" opacity="0">
+              <rect x="70" y="-26" width="58" height="22" rx="3" fill="#f26b1d" />
+              <text x="99" y="-11" text-anchor="middle" class="wot">WO</text>
+            </g>
+          </g>
+        ))}
+      </svg>
+      <div class="legend mono">
+        <span><i class="d ok"></i>{c.legend.ok}</span>
+        <span><i class="d warn"></i>{c.legend.warn}</span>
+      </div>
+    </figure>
+
+    <section class="log" aria-live="polite">
+      <h3 class="cap mono">{c.logTitle}</h3>
+      <ol class="entries"></ol>
+      <div class="approval" hidden>
+        <p class="ap-title">{c.approvalPrompt}</p>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" data-act="approve">{c.approve}</button>
+          <button type="button" class="btn btn--ghost dark" data-act="reject">{c.reject}</button>
+        </div>
+      </div>
+      <p class="result" hidden></p>
+    </section>
+  </div>
+</div>
+
+<style>
+  .replay { background: var(--shell); color: var(--shell-text); border-radius: 10px; border: 1px solid var(--shell-line); overflow: hidden; }
+  .top { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--shell-line); }
+  .sim { font-family: var(--font-mono); font-size: .78rem; color: #ffb27f; }
+  .ctrl { display: flex; gap: 8px; }
+  .sm { min-height: 36px; padding: 6px 14px; font-size: .88rem; color: var(--shell-text); border-color: var(--shell-line); }
+  .sm:hover { border-color: var(--shell-text); }
+  .body { display: grid; }
+  @media (min-width: 960px) { .body { grid-template-columns: 1.25fr 1fr; } }
+  .floor { margin: 0; padding: 18px; border-bottom: 1px solid var(--shell-line); }
+  @media (min-width: 960px) { .floor { border-bottom: 0; align-self: start; position: sticky; top: 68px; } .log { border-left: 1px solid var(--shell-line); } }
+  .cap { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--shell-muted); margin: 0 0 12px; font-weight: 500; }
+  svg { width: 100%; height: auto; background: #111418; border-radius: 6px; }
+  .body-r { fill: #262c34; stroke: #3a414b; }
+  .lamp { fill: #3ecf8e; transition: fill .3s; }
+  .m[data-state='warn'] .body-r { stroke: #f59e0b; stroke-width: 2; }
+  .m[data-state='warn'] .lamp { fill: #f59e0b; animation: blink 1s steps(2) infinite; }
+  .ml { fill: #e8e6e3; font: 500 12px var(--font-th); }
+  .wot { fill: #15181d; font: 600 11px var(--font-mono); }
+  .wo { transition: opacity .4s; }
+  .part { fill: #c9a27a; animation: move 6s linear infinite; }
+  @keyframes move { from { transform: translateX(0); } to { transform: translateX(100px); } }
+  @keyframes blink { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .part, .m[data-state='warn'] .lamp { animation: none; } }
+  .legend { display: flex; gap: 18px; font-size: .78rem; color: var(--shell-muted); margin-top: 10px; }
+  .d { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .d.ok { background: #3ecf8e; } .d.warn { background: #f59e0b; }
+  .log { padding: 18px; min-height: 360px; }
+  .entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .entries :global(li) { border-left: 2px solid var(--shell-line); padding: 4px 0 4px 14px; font-size: .95rem; animation: in .35s ease-out; }
+  .entries :global(li.event) { border-color: #f59e0b; }
+  .entries :global(li.approval) { border-color: var(--brand); }
+  .entries :global(.k) { display: block; font-family: var(--font-mono); font-size: .72rem; color: var(--shell-muted); margin-bottom: 2px; }
+  .entries :global(code) { font-family: var(--font-mono); font-size: .8rem; color: #7dd3fc; }
+  @keyframes in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .approval { margin-top: 18px; padding: 16px; border: 1px solid var(--brand); border-radius: 6px; background: rgba(242, 107, 29, .08); }
+  .ap-title { font-weight: 600; margin-bottom: 12px; }
+  .dark { color: var(--shell-text); border-color: var(--shell-line); }
+  .result { margin-top: 18px; padding: 14px 16px; border-radius: 6px; background: #1f242b; border-left: 3px solid #3ecf8e; }
+  .result.rej { border-left-color: var(--shell-muted); }
+</style>
+
+<script>
+  type Step = { kind: string; text: string; tool?: string; machine?: string; state?: string };
+  const DELAY = 1700;
+
+  document.querySelectorAll<HTMLElement>('[data-replay]').forEach((root) => {
+    const data = JSON.parse(root.dataset.replay!) as { steps: Step[]; approved: string; rejected: string; toolLabel: string; stepLabel: string };
+    const list = root.querySelector('.entries')!;
+    const approval = root.querySelector<HTMLElement>('.approval')!;
+    const result = root.querySelector<HTMLElement>('.result')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-act="toggle"]')!;
+    let i = 0;
+    let timer: number | undefined;
+
+    const machine = (id: string) => root.querySelector<SVGGElement>(`[data-machine="${id}"]`);
+
+    function render(step: Step, n: number) {
+      const li = document.createElement('li');
+      li.className = step.kind;
+      const k = document.createElement('span');
+      k.className = 'k';
+      k.textContent = `${data.stepLabel} ${n}`;
+      li.append(k);
+      if (step.tool) {
+        const code = document.createElement('code');
+        code.textContent = `${data.toolLabel}: ${step.tool}`;
+        li.append(code, document.createElement('br'));
+      }
+      li.append(document.createTextNode(step.text));
+      list.append(li);
+      if (step.machine && step.state) machine(step.machine)?.setAttribute('data-state', step.state);
+      if (step.kind === 'approval') { approval.hidden = false; stop(); toggle.disabled = true; }
+    }
+
+    function tick() {
+      if (i >= data.steps.length) return stop();
+      render(data.steps[i], i + 1);
+      i++;
+    }
+    function play() {
+      if (timer || i >= data.steps.length) return;
+      toggle.textContent = toggle.dataset.pause!;
+      tick();
+      timer = window.setInterval(tick, DELAY);
+    }
+    function stop() {
+      window.clearInterval(timer);
+      timer = undefined;
+      toggle.textContent = toggle.dataset.play!;
+    }
+    function reset() {
+      stop();
+      i = 0;
+      list.replaceChildren();
+      approval.hidden = true;
+      result.hidden = true;
+      result.classList.remove('rej');
+      toggle.disabled = false;
+      root.querySelectorAll('[data-machine]').forEach((m) => m.setAttribute('data-state', 'ok'));
+      root.querySelectorAll<SVGGElement>('.wo').forEach((w) => w.setAttribute('opacity', '0'));
+    }
+    function decide(ok: boolean) {
+      approval.hidden = true;
+      result.hidden = false;
+      result.textContent = ok ? data.approved : data.rejected;
+      result.classList.toggle('rej', !ok);
+      if (ok) machine('cnc')?.querySelector('.wo')?.setAttribute('opacity', '1');
+    }
+
+    root.addEventListener('click', (e) => {
+      const act = (e.target as HTMLElement).closest<HTMLElement>('[data-act]')?.dataset.act;
+      if (act === 'toggle') timer ? stop() : play();
+      if (act === 'restart') { reset(); play(); }
+      if (act === 'approve') decide(true);
+      if (act === 'reject') decide(false);
+    });
+
+    // Start when the demo scrolls into view.
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) { play(); io.disconnect(); }
+    }, { threshold: 0.35 });
+    io.observe(root);
+  });
+</script>

@@ -1,0 +1,24 @@
+{
+  "name": "phli-website",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check:claims": "node scripts/check-claims.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "test": "npm run build && npm run check:claims && npm run check:i18n"
+  },
+  "engines": {
+    "node": ">=20.3"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-sans-thai": "5.3.0",
+    "astro": "5.18.2"
+  }
+}

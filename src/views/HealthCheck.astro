@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactButtons from '../components/ContactButtons.astro';
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang);
+const h = c.healthCheck;
+---
+<Base lang={lang} page="healthCheck">
+  <PageHero eyebrow={h.eyebrow} title={h.title} lead={h.lead}>
+    <div class="cta"><a class="btn btn--primary" href="#book">{c.nav.cta}</a></div>
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap grid grid--2 two">
+      <div>
+        <h2>{h.getTitle}</h2>
+        <ul class="list-check">{h.get.map((g) => <li>{g}</li>)}</ul>
+      </div>
+      <div>
+        <h2>{h.fitTitle}</h2>
+        <ul class="list-check">{h.fit.map((g) => <li>{g}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sunk">
+    <div class="wrap">
+      <div class="section-head"><h2>{h.stepsTitle}</h2></div>
+      <ol class="tl">
+        {h.steps.map((s, i) => (
+          <li><span class="n mono">{i + 1}</span><div><h3>{s.title}</h3><p>{s.body}</p></div></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid grid--2 two">
+      <div>
+        <h2>{h.needTitle}</h2>
+        <ul class="list-check">{h.need.map((g) => <li>{g}</li>)}</ul>
+      </div>
+      <div>
+        <h2>{h.faqTitle}</h2>
+        <div class="faq">
+          {h.faq.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--shell" id="book">
+    <div class="wrap">
+      <h2>{h.ctaTitle}</h2>
+      <p class="lead">{h.ctaBody}</p>
+      <ContactButtons lang={lang} subject={lang === 'th' ? 'นัด Factory Health Check' : 'Factory Health Check'} />
+    </div>
+  </section>
+</Base>
+<style>
+  .cta { margin-top: 28px; }
+  .two { gap: 48px; }
+  .two h2 { font-size: 1.4rem; margin-bottom: 20px; }
+  .tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  @media (min-width: 900px) { .tl { grid-template-columns: repeat(4, 1fr); } }
+  .tl li { display: flex; gap: 16px; padding: 22px 20px 22px 0; border-top: 1px solid var(--line-strong); }
+  .n { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: .85rem; }
+  .tl h3 { margin-bottom: 4px; }
+  .tl p { color: var(--muted); margin: 0; font-size: .95rem; }
+  .faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin: 10px 0 0; color: var(--muted); }
+  #book h2 { margin-bottom: 12px; }
+  #book .lead { margin-bottom: 26px; }
+</style>

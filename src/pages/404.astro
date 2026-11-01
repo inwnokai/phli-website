@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { t, href } from '../i18n';
+const th = t('th').notFound;
+const en = t('en').notFound;
+---
+<Base lang="th" page="notFound" noindex>
+  <PageHero eyebrow="404" title={th.title} lead={th.body}>
+    <p class="en" lang="en">{en.title}. {en.body}</p>
+    <div class="btn-row"><a class="btn btn--dark" href={href('th', 'home')}>{th.back}</a><a class="btn btn--ghost" href={href('en', 'home')} lang="en">{en.back}</a></div>
+  </PageHero>
+</Base>
+<style>.en { color: var(--muted); margin: 12px 0 28px; }</style>
