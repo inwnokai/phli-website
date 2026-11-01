@@ -2,16 +2,33 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import FactoryReplay from '../components/FactoryReplay.astro';
+import LiveAgent from '../components/LiveAgent.astro';
 import { t, href, type Lang } from '../i18n';
+import { site } from '../config/site';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const c = t(lang);
 const d = c.demo;
+const live = site.demoApiUrl;
 ---
 <Base lang={lang} page="demo">
-  <PageHero eyebrow={d.eyebrow} title={d.title} lead={d.lead} />
+  <PageHero eyebrow={d.eyebrow} title={d.title} lead={live ? d.live.intro : d.lead} />
   <section class="demo">
-    <div class="wrap"><FactoryReplay lang={lang} /></div>
+    <div class="wrap">
+      {live ? (
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist">
+            <button role="tab" id="tab-live" aria-controls="panel-live" aria-selected="true">{d.live.tabLive}</button>
+            <button role="tab" id="tab-replay" aria-controls="panel-replay" aria-selected="false" tabindex="-1">{d.live.tabReplay}</button>
+          </div>
+          <p class="notice" role="status" hidden></p>
+          <div role="tabpanel" id="panel-live" aria-labelledby="tab-live"><LiveAgent lang={lang} apiUrl={live} /></div>
+          <div role="tabpanel" id="panel-replay" aria-labelledby="tab-replay" hidden><FactoryReplay lang={lang} /></div>
+        </div>
+      ) : (
+        <FactoryReplay lang={lang} />
+      )}
+    </div>
   </section>
   <section class="section">
     <div class="wrap next">
@@ -28,8 +45,41 @@ const d = c.demo;
 </Base>
 <style>
   .demo { padding-bottom: 72px; }
+  .tablist { display: inline-flex; gap: 4px; padding: 4px; background: var(--sunk); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; }
+  .tablist button { font: inherit; font-weight: 600; font-size: .95rem; border: 0; background: transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--muted); min-height: 40px; }
+  .tablist button[aria-selected='true'] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+  .notice { font-size: .92rem; background: var(--warn-soft); color: var(--warn); padding: 10px 14px; border-radius: 6px; margin: 0 0 16px; }
   .next { display: grid; gap: 24px; align-items: end; }
   @media (min-width: 900px) { .next { grid-template-columns: 1.4fr 1fr; } .next .btn-row { justify-content: flex-end; } }
   .next h2 { margin-bottom: 10px; }
   .next .lead { margin: 0; }
 </style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const notice = root.querySelector<HTMLElement>('.notice')!;
+    const select = (tab: HTMLButtonElement) => {
+      for (const t of tabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+      }
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    });
+    // If the live API is off, busy for the day or unreachable, switch to the recorded run.
+    root.addEventListener('live-unavailable', (e) => {
+      notice.textContent = (e as CustomEvent<string>).detail;
+      notice.hidden = false;
+      select(tabs[1]);
+    });
+  });
+</script>

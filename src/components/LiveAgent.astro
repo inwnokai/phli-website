@@ -1,0 +1,238 @@
+---
+// Live mode of the agent demo. Talks to the demo API (api/ folder) over SSE.
+// The visitor never types free text: they pick a scenario and approve or reject.
+import FloorSvg from './FloorSvg.astro';
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang; apiUrl: string }
+const { lang, apiUrl } = Astro.props;
+const c = t(lang).demo;
+const L = c.live;
+const payload = JSON.stringify({ api: apiUrl, lang, L, toolLabel: c.toolLabel, approve: c.approve, reject: c.reject });
+---
+<div class="console live" data-live={payload}>
+  <div class="top">
+    <span class="sim">{c.disclaimer}</span>
+    <span class="sim model mono" hidden></span>
+  </div>
+  <div class="picker">
+    <p class="cap mono">{L.pick}</p>
+    <div class="ctrl scenarios"></div>
+    <p class="note">{L.aiNote}</p>
+  </div>
+  <div class="body">
+    <FloorSvg lang={lang} />
+    <section class="log" aria-live="polite">
+      <h3 class="cap mono">{c.logTitle}</h3>
+      <ol class="entries"></ol>
+      <div class="approval-box" hidden>
+        <p class="ap-title">{c.approvalPrompt}</p>
+        <dl></dl>
+        <div class="btn-row">
+          <button type="button" class="btn btn--primary" data-act="approve">{c.approve}</button>
+          <button type="button" class="btn ghost-dark" data-act="reject">{c.reject}</button>
+        </div>
+      </div>
+      <p class="result" hidden></p>
+      <button type="button" class="btn sm again" data-act="again" hidden>{L.again}</button>
+    </section>
+  </div>
+</div>
+<style>
+  .picker { padding: 16px 18px; border-bottom: 1px solid var(--shell-line); }
+  .picker .note { margin-top: 10px; }
+  .again { margin-top: 16px; }
+</style>
+
+<script>
+  type Labels = Record<string, any>;
+  type Cfg = { api: string; lang: 'th' | 'en'; L: Labels; toolLabel: string };
+
+  document.querySelectorAll<HTMLElement>('[data-live]').forEach((root) => {
+    const cfg = JSON.parse(root.dataset.live!) as Cfg;
+    const { L } = cfg;
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const list = $('.entries');
+    const box = $('.approval-box');
+    const result = $('.result');
+    const again = $('.again');
+    const scenarios = $('.scenarios');
+    const modelTag = $('.model');
+    let es: EventSource | null = null;
+    let sessionId = '';
+    let approvalId = '';
+    const toolEntries = new Map<string, HTMLLIElement>();
+
+    const fallback = (msg: string) => root.dispatchEvent(new CustomEvent('live-unavailable', { bubbles: true, detail: msg }));
+
+    function entry(kind: string, text: string, label?: string) {
+      const li = document.createElement('li');
+      li.className = kind;
+      if (label) {
+        const k = document.createElement('span');
+        k.className = 'k';
+        k.textContent = label;
+        li.append(k);
+      }
+      if (text) li.append(document.createTextNode(text));
+      list.append(li);
+      return li;
+    }
+    function details(summary: string, value: unknown) {
+      const d = document.createElement('details');
+      const s = document.createElement('summary');
+      s.textContent = summary;
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify(value, null, 2);
+      d.append(s, pre);
+      return d;
+    }
+    function setFloor(state: { machines: { id: string; state: string; workOrders: string[] }[] }) {
+      for (const m of state.machines) {
+        const g = root.querySelector(`[data-machine="${m.id}"]`);
+        if (!g) continue;
+        g.setAttribute('data-state', m.state);
+        const wo = g.querySelector('.wo');
+        wo?.setAttribute('opacity', m.workOrders.length ? '1' : '0');
+        const label = wo?.querySelector('text');
+        if (label && m.workOrders.length) label.textContent = m.workOrders.at(-1)!;
+      }
+    }
+    function reset() {
+      es?.close();
+      es = null;
+      list.replaceChildren();
+      toolEntries.clear();
+      box.hidden = true;
+      result.hidden = true;
+      again.hidden = true;
+      root.querySelectorAll('[data-machine]').forEach((g) => g.setAttribute('data-state', 'running'));
+      root.querySelectorAll('.wo').forEach((w) => w.setAttribute('opacity', '0'));
+    }
+    const lock = (on: boolean) => scenarios.querySelectorAll('button').forEach((b) => ((b as HTMLButtonElement).disabled = on));
+
+    async function start(id: string, btn: HTMLButtonElement) {
+      reset();
+      lock(true);
+      scenarios.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let res: Response;
+      try {
+        res = await fetch(`${cfg.api}/v1/sessions`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ scenarioId: id, lang: cfg.lang }),
+        });
+      } catch {
+        lock(false);
+        return fallback(L.unavailable);
+      }
+      if (res.status === 429) { lock(false); entry('err', L.rateLimited); return; }
+      if (res.status === 503) {
+        lock(false);
+        const body = await res.json().catch(() => ({}));
+        if (body.error === 'busy') { entry('err', L.busy); return; }
+        return fallback(L.unavailable);
+      }
+      if (!res.ok) { lock(false); return fallback(L.unavailable); }
+      const s = await res.json();
+      sessionId = s.sessionId;
+      modelTag.hidden = false;
+      modelTag.textContent = `${L.model}: ${s.model}`;
+      listen(`${cfg.api}${s.eventsUrl}`);
+    }
+
+    function listen(url: string) {
+      es = new EventSource(url);
+      const on = (type: string, fn: (d: any) => void) => es!.addEventListener(type, (e) => fn(JSON.parse((e as MessageEvent).data)));
+      on('factory.state', setFloor);
+      on('factory.event', (d) => entry('event', d.text));
+      on('agent.message', (d) => entry('think', d.text));
+      on('tool.call', (d) => {
+        const li = entry('tool', '');
+        const code = document.createElement('code');
+        code.textContent = `${cfg.toolLabel}: ${d.tool}`;
+        li.append(code);
+        if (d.input && Object.keys(d.input).length) li.append(details('input', d.input));
+        toolEntries.set(d.id, li);
+      });
+      on('tool.result', (d) => {
+        const li = toolEntries.get(d.id) ?? entry('tool', '');
+        li.append(details(`${d.ok ? '✓' : '✗'} ${L.result}`, d.output));
+      });
+      on('approval.required', (d) => {
+        approvalId = d.id;
+        const dl = box.querySelector('dl')!;
+        dl.replaceChildren();
+        const add = (k: string, v: unknown) => {
+          const dt = document.createElement('dt');
+          dt.textContent = k;
+          const dd = document.createElement('dd');
+          dd.textContent = String(v);
+          dl.append(dt, dd);
+        };
+        add('action', d.tool);
+        for (const [k, v] of Object.entries(d.input ?? {})) add(k, v);
+        box.hidden = false;
+        entry('approval', '', d.tool).append(document.createTextNode(` · ${(box.querySelector('.ap-title') as HTMLElement).textContent}`));
+      });
+      on('approval.resolved', (d) => {
+        box.hidden = true;
+        result.hidden = false;
+        result.classList.toggle('rej', d.decision !== 'approve');
+        result.textContent = d.decision === 'approve' ? L.decisionApproved : d.decision === 'expired' ? L.decisionExpired : L.decisionRejected;
+      });
+      on('agent.error', (d) => entry('err', d.message));
+      on('session.ended', (d) => {
+        entry(d.reason === 'done' ? 'think' : 'err', L.ended[d.reason] ?? L.ended.done);
+        es?.close();
+        es = null;
+        box.hidden = true;
+        again.hidden = false;
+        lock(false);
+      });
+    }
+
+    async function decide(decision: 'approve' | 'reject') {
+      box.querySelectorAll('button').forEach((b) => ((b as HTMLButtonElement).disabled = true));
+      try {
+        await fetch(`${cfg.api}/v1/sessions/${sessionId}/approvals/${approvalId}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ decision }),
+        });
+      } finally {
+        box.querySelectorAll('button').forEach((b) => ((b as HTMLButtonElement).disabled = false));
+      }
+    }
+
+    root.addEventListener('click', (e) => {
+      const act = (e.target as HTMLElement).closest<HTMLElement>('[data-act]')?.dataset.act;
+      if (act === 'approve') decide('approve');
+      if (act === 'reject') decide('reject');
+      if (act === 'again') { reset(); scenarios.querySelector('button')?.focus(); }
+    });
+
+    // Load scenarios; fall back to Replay if the API is off or unreachable.
+    (async () => {
+      try {
+        const [st, sc] = await Promise.all([fetch(`${cfg.api}/v1/status`), fetch(`${cfg.api}/v1/scenarios`)]);
+        const status = await st.json();
+        if (!status.available) return fallback(L.unavailable);
+        const { scenarios: list } = await sc.json();
+        for (const s of list) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'btn sm';
+          b.textContent = s.title[cfg.lang];
+          b.title = s.event[cfg.lang];
+          b.addEventListener('click', () => start(s.id, b));
+          scenarios.append(b);
+        }
+      } catch {
+        fallback(L.unavailable);
+      }
+    })();
+
+    // Sessions expire on the server after 15 minutes; closing the stream is enough here.
+    addEventListener('pagehide', () => es?.close());
+  });
+</script>

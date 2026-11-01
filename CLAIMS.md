@@ -29,6 +29,8 @@ Status labels on the site:
 | OEE per machine | In development | Fixed 2.0-min ideal cycle; station OEE is null |
 | LINE alerts | In development | `HERMES_LINE_ENABLED` false; status reply is fixed text |
 | Demo tool names (`production.get_machine_status`, `maintenance.get_open_work_orders`, `knowledge.search_sop`) | Real tool names, simulated run | `mcp-tool-registry.ts:129,174,320` |
+| Live demo: a real AI model works on a simulated factory and waits for the visitor's approval | Demo only | `api/` in this repo; tests in `api/test/` |
+| Demo SOP search is keyword search | Demo only | `api/src/search.js` (BM25). Do not call it neural or vector search |
 
 ## Must not say (enforced by `scripts/check-claims.mjs`)
 Customer OEE or % results · ROI or payback · model speed (tokens/sec) · air-gapped or 100% on-prem ·

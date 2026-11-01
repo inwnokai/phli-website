@@ -15,6 +15,9 @@ export const site = {
     ? Number(import.meta.env.PUBLIC_PRICE_PER_LINE_THB)
     : null,
 
+  // Live agent demo API (api/ folder). null = only the recorded Replay is shown.
+  demoApiUrl: ((import.meta.env.PUBLIC_DEMO_API_URL as string | undefined) ?? '').replace(/\/$/, '') || null,
+
   // Investor page: market figures must come from the 30 Oct research with a source each.
   // Empty list = section hidden.
   marketFacts: [] as { label: { th: string; en: string }; value: string; source: string }[],

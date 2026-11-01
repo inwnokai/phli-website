@@ -1,0 +1,44 @@
+---
+// 2D floor view shared by the Replay and Live demos. Machines are addressed by
+// data-machine (same ids as the demo API). A low-poly 3D renderer can replace this
+// component later as long as it reacts to the same data-state / work-order updates.
+import { t, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = t(lang).demo;
+const machines = [
+  { id: 'SAW-01', x: 40, label: c.machines.saw },
+  { id: 'CNC-01', x: 200, label: c.machines.cnc },
+  { id: 'EDGE-01', x: 360, label: c.machines.edge },
+  { id: 'PACK-01', x: 520, label: c.machines.pack },
+];
+---
+<figure class="floor">
+  <figcaption class="cap mono">{c.floorTitle}</figcaption>
+  <svg viewBox="0 0 680 260" role="img" aria-label={c.floorTitle}>
+    <defs>
+      <pattern id={`grid-${lang}`} width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0H0V20" fill="none" stroke="#2e343d" stroke-width="0.6" />
+      </pattern>
+    </defs>
+    <rect width="680" height="260" fill={`url(#grid-${lang})`} />
+    <line x1="40" y1="215" x2="640" y2="215" stroke="#3a414b" stroke-width="10" stroke-linecap="round" />
+    <g>{[0, 1, 2, 3, 4, 5].map((i) => <rect class="part" x={60 + i * 100} y="210" width="16" height="10" rx="2" />)}</g>
+    {machines.map((m) => (
+      <g class="m" data-machine={m.id} data-state="running" transform={`translate(${m.x},60)`}>
+        <rect class="body-r" width="120" height="96" rx="6" />
+        <rect class="lamp" x="96" y="10" width="14" height="14" rx="7" />
+        <rect x="14" y="36" width="92" height="44" rx="3" fill="#15181d" opacity=".55" />
+        <text x="60" y="118" text-anchor="middle" class="ml">{m.label}</text>
+        <g class="wo" opacity="0">
+          <rect x="62" y="-26" width="66" height="22" rx="3" fill="#f26b1d" />
+          <text x="95" y="-11" text-anchor="middle" class="wot">WO</text>
+        </g>
+      </g>
+    ))}
+  </svg>
+  <div class="legend mono">
+    <span><i class="d ok"></i>{c.legend.ok}</span>
+    <span><i class="d warn"></i>{c.legend.warn}</span>
+  </div>
+</figure>

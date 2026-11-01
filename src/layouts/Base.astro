@@ -12,10 +12,23 @@ const meta = c.meta[page];
 const navPage: PageKey = page === 'notFound' ? 'home' : page;
 const base = site.url.replace(/\/$/, '');
 const canonical = base + href(lang, navPage);
+// CSP lives here (not in vercel.json) so it can allow the demo API origin set at build time.
+const apiOrigin = site.demoApiUrl ? new URL(site.demoApiUrl).origin : '';
+const csp = [
+  "default-src 'self'",
+  "img-src 'self' data:",
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  `connect-src 'self'${apiOrigin ? ' ' + apiOrigin : ''}`,
+  "base-uri 'self'",
+  "form-action 'none'",
+].join('; ');
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Phli',
+  alternateName: 'ผลิ',
   url: base + '/',
   description: c.meta.siteTagline,
 };
@@ -36,6 +49,7 @@ const jsonLd = {
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={lang === 'th' ? 'th_TH' : 'en_US'} />
     <meta name="theme-color" content="#15181d" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>

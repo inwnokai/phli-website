@@ -16,6 +16,7 @@ npm test         # build + claims check + i18n check
 | `PUBLIC_LINE_OA_ID` | LINE OA ID, e.g. `@phli` | contact buttons show "being set up" |
 | `PUBLIC_CONTACT_EMAIL` | Lead email | same |
 | `PUBLIC_PRICE_PER_LINE_THB` | Starting price per line per month | price hidden |
+| `PUBLIC_DEMO_API_URL` | Demo API base URL (see `api/README.md`) | only the recorded run is shown |
 
 Market figures and pilot results are switched on in `src/config/site.ts`, only with sources and consent.
 
@@ -26,6 +27,9 @@ Market figures and pilot results are switched on in `src/config/site.ts`, only w
 - `CLAIMS.md`: what we may say, with evidence. `scripts/check-claims.mjs` enforces it.
 - `docs/DECISIONS.md`: decisions so far. `docs/MAIN_REPO_AUDIT_PROMPT.md`: audit prompt.
 
+## Demo API
+`api/` is a separate Docker service for the live agent demo, with swappable model backends
+(scripted, local OpenAI-compatible such as Ollama or llama.cpp, or Claude). See `api/README.md`.
+
 ## Not built yet
-- Live sandbox agent API (separate Docker service, swappable LLM backends)
-- Low-poly 3D floor view (the replay is built so the renderer can be swapped)
+- Low-poly 3D floor view (`src/components/FloorSvg.astro` is the piece to swap)
